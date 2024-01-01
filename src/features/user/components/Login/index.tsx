@@ -2,7 +2,7 @@ export function Login() {
   return (
     <>
       <div>
-        <button>Login with Dropbox</button>
+        <button>Login</button>
       </div>
     </>
   );
