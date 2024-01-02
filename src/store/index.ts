@@ -1,10 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { userSlice } from "../features/user/slice";
+
+import { createReducerManager } from "./reducerManager";
+
+const staticReducers = {
+  // none yet
+};
+
+export const reducerManager = createReducerManager(staticReducers);
 
 const store = configureStore({
-  reducer: {
-    user: userSlice.reducer,
-  },
+  reducer: reducerManager.reduce,
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
