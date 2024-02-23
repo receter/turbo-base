@@ -75,7 +75,7 @@ function useFeatures(features: FeatureId[]) {
         featureManager.unregister(features);
       };
     }
-  }, []);
+  }, [featureManager, features]);
 }
 
 export { useFeatures, configureFeatureManager, FeaturesContext };
