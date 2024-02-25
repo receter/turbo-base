@@ -1,15 +1,22 @@
 import { createContext, useContext, useEffect } from "react";
-import { ReducerManager } from "./store/reducerManager";
-import { settingsSlice } from "./features/settings/slice";
-import { userSlice } from "./features/user/slice";
+import { ReducerManager } from "../store/reducerManager";
 import { Dispatch } from "@reduxjs/toolkit";
+import settingsSlice from "./settings/slice";
+import userSlice from "./user/slice";
+import fileSystemSlice from "./fileSystem/slice";
 
-const featureSliceMap = {
+export const featureSliceMap = {
   settings: settingsSlice,
   user: userSlice,
+  fileSystem: fileSystemSlice,
 };
 
-export type FeatureId = keyof typeof featureSliceMap;
+export type FeatureKey = keyof typeof featureSliceMap;
+
+// Feature reducers are optional in the root state
+export type RootStateFeatures = {
+  [K in FeatureKey]?: ReturnType<(typeof featureSliceMap)[K]["reducer"]>;
+};
 
 type FeaturesValue = ReturnType<typeof configureFeatureManager> | null;
 
@@ -19,12 +26,12 @@ const configureFeatureManager = (
   reducerManager: ReducerManager,
   dispatch: Dispatch,
 ) => {
-  let currentRegistry: FeatureId[][] = [];
+  let currentRegistry: FeatureKey[][] = [];
 
   function updateReducers() {
     let reducerWasChanged: boolean = false;
 
-    const registeredFeaturesSet: FeatureId[] = [
+    const registeredFeaturesSet: FeatureKey[] = [
       ...new Set(currentRegistry.flat()),
     ];
 
@@ -44,7 +51,7 @@ const configureFeatureManager = (
 
     // Remove recently unregistered reducers
     const reducersToRemove = reducerMapFeatureKeys.filter(
-      (key) => !registeredFeaturesSet.includes(key as FeatureId),
+      (key) => !registeredFeaturesSet.includes(key as FeatureKey),
     );
 
     reducersToRemove.forEach((key) => reducerManager.remove(key));
@@ -55,18 +62,18 @@ const configureFeatureManager = (
     }
   }
   return {
-    register: (features: FeatureId[]) => {
+    register: (features: FeatureKey[]) => {
       currentRegistry = [...currentRegistry, features];
       updateReducers();
     },
-    unregister: (features: FeatureId[]) => {
+    unregister: (features: FeatureKey[]) => {
       currentRegistry = currentRegistry.filter((item) => item !== features);
       updateReducers();
     },
   };
 };
 
-function useFeatures(features: FeatureId[]) {
+function useFeatures(features: FeatureKey[]) {
   const featureManager = useContext(FeaturesContext);
   useEffect(() => {
     if (featureManager) {

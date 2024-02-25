@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 import { Settings } from "./types";
 
 // Define a type for the slice state
@@ -11,15 +12,16 @@ const initialState: SettingsState = {
   settings: { test: "123" },
 };
 
-export const settingsSlice = createSlice({
+const slice = createSlice({
   name: "settings",
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    setTest: (state, action) => {
+    setTest: (state, action: PayloadAction<Settings>) => {
       state.settings = action.payload;
     },
   },
 });
 
-export const { setTest } = settingsSlice.actions;
+export const { setTest } = slice.actions;
+export default slice;

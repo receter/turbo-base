@@ -1,7 +1,7 @@
-import { FeatureId, useFeatures } from "../../featureManger";
+import { FeatureKey, useFeatures } from "../../features/featureManger";
 import { useAppSelector } from "../../store/react-hooks";
 
-const features: FeatureId[] = ["user"];
+const features: FeatureKey[] = ["user"];
 
 function Container1() {
   useFeatures(features);

@@ -2,7 +2,10 @@ import "./index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import store, { reducerManager } from "./store";
-import { configureFeatureManager, FeaturesContext } from "./featureManger";
+import {
+  configureFeatureManager,
+  FeaturesContext,
+} from "./features/featureManger.ts";
 import { Provider } from "react-redux";
 import App from "./containers/App/index.tsx";
 

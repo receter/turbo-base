@@ -1,10 +1,10 @@
-import {
+import { combineReducers } from "@reduxjs/toolkit";
+import type {
+  Reducer,
   Action,
   ReducersMapObject,
   StateFromReducersMapObject,
-  combineReducers,
-} from "@reduxjs/toolkit";
-import { FeatureReducer } from "../features/types";
+} from "redux";
 
 export type ReducerManager = ReturnType<typeof createReducerManager>;
 
@@ -41,7 +41,7 @@ export function createReducerManager(initialReducers: ReducersMapObject) {
     },
 
     // Adds a new reducer with the specified key
-    add: (key: string, reducer: FeatureReducer) => {
+    add: (key: string, reducer: Reducer) => {
       if (!key || reducers[key]) {
         return;
       }

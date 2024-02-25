@@ -1,10 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-
 import { createReducerManager } from "./reducerManager";
-import { settingsSlice } from '../features/settings/slice';
-import { userSlice } from "../features/user/slice";
+import { RootStateFeatures } from "../features/featureManger";
 
-const staticReducers = {
+const initialReducers = {
   // none yet
 
   // Global (App) reducers would go here
@@ -13,7 +11,7 @@ const staticReducers = {
   reducerManager: (state = 0) => state,
 };
 
-export const reducerManager = createReducerManager(staticReducers);
+export const reducerManager = createReducerManager(initialReducers);
 
 const store = configureStore({
   reducer: reducerManager.reduce,
@@ -22,13 +20,9 @@ const store = configureStore({
 // Infer the `RootState` and `AppDispatch` types from the store itself
 // export type RootState = ReturnType<typeof store.getState>;
 
-type RootStateStatic = ReturnType<typeof store.getState>;
+type RootStateInitial = ReturnType<typeof store.getState>;
 
-export type RootState = RootStateStatic & {
-  settings?: ReturnType<typeof settingsSlice.reducer>;
-  user?: ReturnType<typeof userSlice.reducer>;
-};
-
+export type RootState = RootStateInitial & RootStateFeatures;
 export type AppDispatch = typeof store.dispatch;
 
 export default store;
