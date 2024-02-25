@@ -1,6 +1,5 @@
 import {
   Action,
-  CombinedState,
   ReducersMapObject,
   StateFromReducersMapObject,
   combineReducers,
@@ -25,9 +24,7 @@ export function createReducerManager(initialReducers: ReducersMapObject) {
     // The root reducer function exposed by this object
     // This will be passed to the store
     reduce: (
-      state:
-        | CombinedState<StateFromReducersMapObject<typeof reducers>>
-        | undefined,
+      state: StateFromReducersMapObject<typeof reducers> | undefined,
       action: Action,
     ) => {
       // If any reducers have been removed, clean up their state first
