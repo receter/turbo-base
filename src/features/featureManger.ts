@@ -3,12 +3,21 @@ import { ReducerManager } from "../store/reducerManager";
 import { Dispatch } from "@reduxjs/toolkit";
 import settingsSlice from "./settings/slice";
 import userSlice from "./user/slice";
+import userSaga from "./user/saga";
 import fileSystemSlice from "./fileSystem/slice";
+import fileSystemSaga from "./fileSystem/saga";
+import { sagaMiddleware } from "../store";
 
-export const featureSliceMap = {
+const featureSliceMap = {
   settings: settingsSlice,
   user: userSlice,
   fileSystem: fileSystemSlice,
+};
+
+const featureSagaMap = {
+  settings: null,
+  user: userSaga,
+  fileSystem: fileSystemSaga,
 };
 
 export type FeatureKey = keyof typeof featureSliceMap;
@@ -27,6 +36,9 @@ const configureFeatureManager = (
   dispatch: Dispatch,
 ) => {
   let currentRegistry: FeatureKey[][] = [];
+  const runningSagas: {
+    [key in FeatureKey]?: ReturnType<typeof sagaMiddleware.run>;
+  } = {};
 
   function updateReducers() {
     let reducerWasChanged: boolean = false;
@@ -38,7 +50,8 @@ const configureFeatureManager = (
     const reducerMap = reducerManager.getReducerMap();
     const reducerMapFeatureKeys = Object.keys(reducerMap).filter((key) =>
       Object.keys(featureSliceMap).includes(key),
-    );
+    ) as FeatureKey[];
+
     // Add recently registered reducers
     const reducersToAdd = registeredFeaturesSet.filter(
       (key) => !reducerMapFeatureKeys.includes(key),
@@ -47,6 +60,10 @@ const configureFeatureManager = (
     reducersToAdd.forEach((key) => {
       const slice = featureSliceMap[key];
       reducerManager.add(key, slice.reducer);
+      const saga = featureSagaMap[key];
+      if (saga !== null) {
+        runningSagas[key] = sagaMiddleware.run(saga);
+      }
     });
 
     // Remove recently unregistered reducers
@@ -54,7 +71,14 @@ const configureFeatureManager = (
       (key) => !registeredFeaturesSet.includes(key as FeatureKey),
     );
 
-    reducersToRemove.forEach((key) => reducerManager.remove(key));
+    reducersToRemove.forEach((key) => {
+      reducerManager.remove(key);
+      const saga = runningSagas[key];
+      if (typeof saga !== "undefined") {
+        saga.cancel();
+        delete runningSagas[key];
+      }
+    });
     reducerWasChanged = reducersToAdd.length > 0 || reducersToRemove.length > 0;
 
     if (reducerWasChanged) {

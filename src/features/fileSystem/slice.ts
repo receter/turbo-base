@@ -5,7 +5,7 @@ type FileSystemType = "dropbox";
 
 export interface FileSystemState {
   type: FileSystemType | null;
-  readyState: "initializing" | null;
+  readyState: "initializing" | "ready" | "error" | null;
 }
 
 const initialState: FileSystemState = {
@@ -20,6 +20,12 @@ const slice = createSlice({
     initialize: (state, action: PayloadAction<FileSystemType>) => {
       state.type = action.payload;
       state.readyState = "initializing";
+    },
+    ready: (state) => {
+      state.readyState = "ready";
+    },
+    error: (state) => {
+      state.readyState = "error";
     },
   },
 });

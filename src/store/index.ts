@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import createSagaMiddleware from "redux-saga";
 import { createReducerManager } from "./reducerManager";
 import { RootStateFeatures } from "../features/featureManger";
 
@@ -13,8 +14,14 @@ const initialReducers = {
 
 export const reducerManager = createReducerManager(initialReducers);
 
+// Create the saga middleware
+export const sagaMiddleware = createSagaMiddleware();
+const middleware = [sagaMiddleware];
+
 const store = configureStore({
   reducer: reducerManager.reduce,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
