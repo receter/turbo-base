@@ -31,7 +31,7 @@ const slice = createSlice({
 });
 
 // export actions
-export const { initialize } = slice.actions;
+export const { initialize, ready, error } = slice.actions;
 
 // export slice
 export default slice;

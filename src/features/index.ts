@@ -1,30 +1,24 @@
 import { createContext, useContext, useEffect } from "react";
 import { ReducerManager } from "../store/reducerManager";
 import { Dispatch } from "@reduxjs/toolkit";
-import settingsSlice from "./settings/slice";
-import userSlice from "./user/slice";
-import userSaga from "./user/saga";
-import fileSystemSlice from "./fileSystem/slice";
-import fileSystemSaga from "./fileSystem/saga";
 import { sagaMiddleware } from "../store";
+import exampleFeature from "./example";
+import fileSystemFeature from "./fileSystem";
+import settingsFeature from "./settings";
+import userFeature from "./user";
 
-const featureSliceMap = {
-  settings: settingsSlice,
-  user: userSlice,
-  fileSystem: fileSystemSlice,
+const featureMap = {
+  settings: settingsFeature,
+  user: userFeature,
+  fileSystem: fileSystemFeature,
+  example: exampleFeature,
 };
 
-const featureSagaMap = {
-  settings: null,
-  user: userSaga,
-  fileSystem: fileSystemSaga,
-};
-
-export type FeatureKey = keyof typeof featureSliceMap;
+export type FeatureKey = keyof typeof featureMap;
 
 // Feature reducers are optional in the root state
 export type RootStateFeatures = {
-  [K in FeatureKey]?: ReturnType<(typeof featureSliceMap)[K]["reducer"]>;
+  [K in FeatureKey]?: ReturnType<(typeof featureMap)[K]["slice"]["reducer"]>;
 };
 
 type FeaturesValue = ReturnType<typeof configureFeatureManager> | null;
@@ -49,7 +43,7 @@ const configureFeatureManager = (
 
     const reducerMap = reducerManager.getReducerMap();
     const reducerMapFeatureKeys = Object.keys(reducerMap).filter((key) =>
-      Object.keys(featureSliceMap).includes(key),
+      Object.keys(featureMap).includes(key),
     ) as FeatureKey[];
 
     // Add recently registered reducers
@@ -58,17 +52,16 @@ const configureFeatureManager = (
     );
 
     reducersToAdd.forEach((key) => {
-      const slice = featureSliceMap[key];
+      const { slice, saga } = featureMap[key];
       reducerManager.add(key, slice.reducer);
-      const saga = featureSagaMap[key];
-      if (saga !== null) {
+      if (saga) {
         runningSagas[key] = sagaMiddleware.run(saga);
       }
     });
 
     // Remove recently unregistered reducers
     const reducersToRemove = reducerMapFeatureKeys.filter(
-      (key) => !registeredFeaturesSet.includes(key as FeatureKey),
+      (key) => !registeredFeaturesSet.includes(key),
     );
 
     reducersToRemove.forEach((key) => {
@@ -79,6 +72,7 @@ const configureFeatureManager = (
         delete runningSagas[key];
       }
     });
+
     reducerWasChanged = reducersToAdd.length > 0 || reducersToRemove.length > 0;
 
     if (reducerWasChanged) {

@@ -1,4 +1,4 @@
-import { FeatureKey, useFeatures } from "../../features/featureManger";
+import { FeatureKey, useFeatures } from "../../features";
 import { useAppSelector } from "../../store/react-hooks";
 
 const features: FeatureKey[] = ["user", "settings"];

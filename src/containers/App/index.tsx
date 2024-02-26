@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { FeatureKey, useFeatures } from "../../features/featureManger";
+import { FeatureKey, useFeatures } from "../../features";
 
 const features: FeatureKey[] = ["fileSystem"];
 

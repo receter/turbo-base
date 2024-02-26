@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
 import { createReducerManager } from "./reducerManager";
-import { RootStateFeatures } from "../features/featureManger";
+import { RootStateFeatures } from "../features";
 
 const initialReducers = {
   // none yet
