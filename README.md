@@ -8,6 +8,11 @@ My first goal is to have it replace my default home/startup page in my browser. 
 
 As a next step I want turbobase to provide an interface to the file system and a simple way to create and manage data. Acting as a "base" for small web applications. For example a note taking application could be opened inside turbobase in an iframe. While the application runs on a different domain, it can still access the file system through the parent window.
 
+## A feed controlled by me/you
+
+A nice idea would be for Turbobase to become my own feed
+where I set the rules and have control over what appears in my feed.
+
 ## Implementation
 
 ### File System
